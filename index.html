@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CC Studio — Tracker Dashboard</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --muted: #9aa4b2;
+        --accent: #7c3aed;
+        --accent-2: #06b6d4;
+        --glass: rgba(255, 255, 255, 0.03);
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+      * {
+        box-sizing: border-box;
+        font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+        color: #e6eef6;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #071124 0%, #081424 60%);
+        min-height: 100vh;
+        padding: 28px;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 20px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+        font-size: 20px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 6px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .time {
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      .flex {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      input[type="number"],
+      input[type="text"],
+      select,
+      textarea {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        padding: 8px;
+        border-radius: 8px;
+        color: #e6eef6;
+      }
+      button {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: white;
+        border: 0;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: var(--muted);
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      /* trackers */
+      .pill {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* charts */
+      .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      footer {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+        .charts {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* small helpers */
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .stats {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .stat {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 8px;
+        border-radius: 8px;
+        min-width: 160px;
+      }
+      .danger {
+        background: linear-gradient(90deg, #ef4444, #fb7185);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <main>
+        <header>
+          <div class="logo">CC</div>
+          <div>
+            <h1>CC Studio — Tracker Dashboard</h1>
+            <div class="lead">
+              Track DMs, grind days, videos, and apps. Data saved locally in
+              your browser.
+            </div>
+          </div>
+        </header>
+
+        <!-- Login / Profile -->
+        <div class="card" id="authCard">
+          <div class="row">
+            <div class="col" style="flex: 1">
+              <label class="small">Select User</label>
+              <select id="userSelect"></select>
+            </div>
+            <div class="col">
+              <label class="small">Quick name edit</label>
+              <input id="userName" placeholder="Display name" />
+            </div>
+            <div style="align-self: end">
+              <button id="saveProfile">Save</button>
+            </div>
+            <div style="align-self: end">
+              <button class="btn-ghost" id="newUserBtn">+ New user</button>
+            </div>
+          </div>
+          <div style="margin-top: 12px" class="row">
+            <button id="loginBtn">Switch / Load</button>
+            <button id="logoutBtn" class="btn-ghost">Logout</button>
+            <button id="exportBtn" class="btn-ghost">Export JSON</button>
+            <input
+              id="importFile"
+              type="file"
+              style="display: none"
+              accept=".json"
+            />
+            <button id="importBtn" class="btn-ghost">Import JSON</button>
+          </div>
+          <div id="authMsg" class="small" style="margin-top: 8px"></div>
+        </div>
+
+        <!-- Controls -->
+        <div
+          class="card"
+          id="controlsCard"
+          style="margin-top: 12px; display: none"
+        >
+          <div class="grid">
+            <div>
+              <label class="small">Add DMs sent today</label>
+              <input type="number" id="dmCount" placeholder="e.g. 20" />
+              <div style="margin-top: 8px" class="row">
+                <button id="addDm">Add DMs</button>
+                <button id="addDmQuick" class="btn-ghost">+1 Quick</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="small">Mark grind day</label>
+              <div class="row">
+                <label style="display: flex; gap: 8px; align-items: center"
+                  ><input type="checkbox" id="grindCheck" /> Completed
+                  shift</label
+                >
+                <button id="addGrind" style="margin-left: 6px">
+                  Add Grind
+                </button>
+              </div>
+
+              <div style="margin-top: 12px">
+                <label class="small">Add video created</label>
+                <div class="row">
+                  <input id="videoTitle" placeholder="Title or short note" />
+                  <button id="addVideo" class="btn-ghost">Add</button>
+                </div>
+              </div>
+
+              <div style="margin-top: 12px">
+                <label class="small">Add OnlineJobs.ph application</label>
+                <div class="row">
+                  <input id="appNote" placeholder="Job title / company" />
+                  <button id="addApp" class="btn-ghost">Add</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px" class="row">
+            <button id="resetUser" class="btn-ghost">Reset My Data</button>
+            <button id="clearAll" class="btn-ghost danger">
+              Clear All Users (Danger)
+            </button>
+          </div>
+        </div>
+
+        <!-- Yearly Overview -->
+        <div
+          class="card"
+          id="overviewCard"
+          style="margin-top: 12px; display: none"
+        >
+          <div class="section">
+            <div
+              class="row"
+              style="justify-content: space-between; align-items: center"
+            >
+              <div>
+                <h3 style="margin: 0">Yearly Overview</h3>
+                <div class="small muted">Auto totals for the current year</div>
+              </div>
+              <div class="stats">
+                <div class="stat">
+                  <div class="small">DMs (year)</div>
+                  <div id="statDM" style="font-weight: 800; font-size: 18px">
+                    0
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="small">Grind Days</div>
+                  <div id="statGrind" style="font-weight: 800; font-size: 18px">
+                    0
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="small">Videos</div>
+                  <div
+                    id="statVideos"
+                    style="font-weight: 800; font-size: 18px"
+                  >
+                    0
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="small">Apps</div>
+                  <div id="statApps" style="font-weight: 800; font-size: 18px">
+                    0
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="charts" style="margin-top: 12px">
+              <div class="card" style="padding: 12px">
+                <div class="small muted">DMs — last 30 days</div>
+                <canvas id="dmChart" width="400" height="200"></canvas>
+              </div>
+
+              <div class="card" style="padding: 12px">
+                <div class="small muted">Grind days per month (this year)</div>
+                <canvas id="grindChart" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px" class="row">
+            <div class="col" style="flex: 1">
+              <label class="small">Quick note / log</label>
+              <textarea
+                id="quickNote"
+                rows="2"
+                placeholder="Today I practiced color grading..."
+              ></textarea>
+            </div>
+            <div style="align-self: end">
+              <button id="saveNote" class="btn-ghost">Save Note</button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="small muted">
+          Data is saved locally in your browser. Use Export to backup or move
+          devices. Charts update automatically.
+        </footer>
+      </main>
+
+      <!-- Sidebar -->
+      <aside>
+        <div class="card">
+          <h3 style="margin: 0">Shortcuts & Info</h3>
+          <div class="small muted" style="margin-top: 8px">
+            Use this sidebar to switch user, export or import your progress, and
+            reset.
+          </div>
+
+          <div style="margin-top: 12px">
+            <div class="small muted">Active user:</div>
+            <div id="activeUser" style="font-weight: 800; margin-top: 6px">
+              —
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <div class="small muted">Quick totals (30 days):</div>
+            <div
+              style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap"
+            >
+              <div class="pill" id="p30DM">DM 0</div>
+              <div class="pill" id="p30Grind">Grind 0</div>
+              <div class="pill" id="p30Video">Vid 0</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <div class="small muted">Actions</div>
+            <div
+              style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap"
+            >
+              <button id="exportAll" class="btn-ghost">Export All</button>
+              <button id="importAll" class="btn-ghost">Import JSON</button>
+              <button id="helpBtn" class="btn-ghost">Help</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      /*
+  CC Studio Tracker
+  - Uses localStorage per user
+  - Simple login user switch
+  - Charts: Chart.js
+  - Data model:
+    users = { id: { name, records: { 'YYYY-MM-DD': { dms, grind(boolean), videos:[], apps:[], notes:[] } } } }
+*/
+
+      const STORAGE_KEY = "ccstudio_users_v1";
+      const DEFAULT_USERS = [
+        { id: "you", name: "You (Night)", records: {} },
+        { id: "bro", name: "Brother", records: {} },
+      ];
+
+      // helpers
+      const $ = (id) => document.getElementById(id);
+      const todayKey = (d = new Date()) => d.toISOString().slice(0, 10);
+
+      function loadUsers() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_USERS));
+          return DEFAULT_USERS;
+        }
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_USERS));
+          return DEFAULT_USERS;
+        }
+      }
+      function saveUsers(users) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+      }
+
+      let users = loadUsers();
+      let activeId = users[0].id;
+
+      // UI elements
+      const userSelect = $("userSelect");
+      const userName = $("userName");
+      const saveProfile = $("saveProfile");
+      const newUserBtn = $("newUserBtn");
+      const loginBtn = $("loginBtn");
+      const logoutBtn = $("logoutBtn");
+      const exportBtn = $("exportBtn");
+      const importBtn = $("importBtn");
+      const importFile = $("importFile");
+
+      const controlsCard = $("controlsCard");
+      const overviewCard = $("overviewCard");
+      const authMsg = $("authMsg");
+
+      const dmCount = $("dmCount");
+      const addDm = $("addDm");
+      const addDmQuick = $("addDmQuick");
+      const grindCheck = $("grindCheck");
+      const addGrind = $("addGrind");
+      const addVideo = $("addVideo");
+      const videoTitle = $("videoTitle");
+      const addApp = $("addApp");
+      const appNote = $("appNote");
+      const resetUser = $("resetUser");
+      const clearAll = $("clearAll");
+
+      const activeUserLabel = $("activeUser");
+      const statDM = $("statDM");
+      const statGrind = $("statGrind");
+      const statVideos = $("statVideos");
+      const statApps = $("statApps");
+
+      const p30DM = $("p30DM"),
+        p30Grind = $("p30Grind"),
+        p30Video = $("p30Video");
+
+      const dmChartCtx = document.getElementById("dmChart").getContext("2d");
+      const grindChartCtx = document
+        .getElementById("grindChart")
+        .getContext("2d");
+
+      let dmChart = null,
+        grindChart = null;
+
+      // populate user select
+      function refreshUserSelect() {
+        userSelect.innerHTML = "";
+        users.forEach((u) => {
+          const opt = document.createElement("option");
+          opt.value = u.id;
+          opt.textContent = u.name || u.id;
+          userSelect.appendChild(opt);
+        });
+        userSelect.value = activeId;
+        const act = users.find((u) => u.id === activeId);
+        userName.value = act ? act.name : "";
+        activeUserLabel.textContent = act ? act.name : "—";
+      }
+      refreshUserSelect();
+
+      // login function
+      function setActive(id) {
+        activeId = id;
+        refreshUserSelect();
+        controlsCard.style.display = "block";
+        overviewCard.style.display = "block";
+        renderOverview();
+        authMsg.textContent =
+          "Loaded user: " + (users.find((u) => u.id === id)?.name || id);
+      }
+      setActive(activeId);
+
+      // Save profile name
+      saveProfile.onclick = () => {
+        const id = userSelect.value;
+        const name = userName.value.trim() || id;
+        const u = users.find((x) => x.id === id);
+        if (u) {
+          u.name = name;
+          saveUsers(users);
+          refreshUserSelect();
+          authMsg.textContent = "Saved name.";
+        }
+      };
+
+      // New user
+      newUserBtn.onclick = () => {
+        const newid = prompt(
+          "New user id (no spaces). Example: me-brother"
+        )?.trim();
+        if (!newid) return;
+        if (users.find((x) => x.id === newid)) {
+          alert("User exists");
+          return;
+        }
+        users.push({ id: newid, name: newid, records: {} });
+        saveUsers(users);
+        refreshUserSelect();
+        authMsg.textContent = "User created. Select and Load.";
+      };
+
+      // Switch / load
+      loginBtn.onclick = () => {
+        const id = userSelect.value;
+        setActive(id);
+      };
+
+      // Logout (hide controls)
+      logoutBtn.onclick = () => {
+        controlsCard.style.display = "none";
+        overviewCard.style.display = "none";
+        authMsg.textContent = "Logged out.";
+        activeUserLabel.textContent = "—";
+      };
+
+      // Export current user's data JSON
+      exportBtn.onclick = () => {
+        const u = users.find((x) => x.id === activeId);
+        const data = JSON.stringify(u, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${u.id}_ccstudio_data.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // Import JSON file (single user)
+      importBtn.onclick = () => importFile.click();
+      importFile.onchange = (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const obj = JSON.parse(reader.result);
+            if (!obj.id) {
+              alert("Invalid file: missing id");
+              return;
+            }
+            const exists = users.find((x) => x.id === obj.id);
+            if (exists && !confirm("User exists. Overwrite?")) return;
+            if (exists) {
+              Object.assign(exists, obj);
+            } else {
+              users.push(obj);
+            }
+            saveUsers(users);
+            refreshUserSelect();
+            authMsg.textContent = "Import complete.";
+          } catch (err) {
+            alert("Invalid JSON");
+          }
+        };
+        reader.readAsText(f);
+      };
+
+      // Add DMs
+      addDm.onclick = () => {
+        const n = parseInt(dmCount.value || "0", 10);
+        if (isNaN(n) || n <= 0) {
+          alert("Enter a number > 0");
+          return;
+        }
+        addToToday({ dms: n });
+        dmCount.value = "";
+      };
+
+      // Quick +1
+      addDmQuick.onclick = () => addToToday({ dms: 1 });
+
+      // Add grind
+      addGrind.onclick = () => {
+        const done = grindCheck.checked;
+        if (!done) {
+          if (!confirm("Mark as NOT completed? Continue?")) return;
+        }
+        addToToday({ grind: done });
+        grindCheck.checked = false;
+      };
+
+      // Add video
+      addVideo.onclick = () => {
+        const t = videoTitle.value.trim();
+        if (!t) {
+          alert("Add a title or note");
+          return;
+        }
+        addToToday({ video: t });
+        videoTitle.value = "";
+      };
+
+      // Add app
+      addApp.onclick = () => {
+        const t = appNote.value.trim();
+        if (!t) {
+          alert("Add job title/company");
+          return;
+        }
+        // limit to 3 per day? we just add but you control later
+        addToToday({ app: t });
+        appNote.value = "";
+      };
+
+      // Reset current user data
+      resetUser.onclick = () => {
+        if (!confirm("Reset all data for this user?")) return;
+        const u = users.find((x) => x.id === activeId);
+        if (u) {
+          u.records = {};
+          saveUsers(users);
+          renderOverview();
+          authMsg.textContent = "User reset.";
+        }
+      };
+
+      // Clear all users
+      clearAll.onclick = () => {
+        if (!confirm("Clear all users and data? This cannot be undone."))
+          return;
+        localStorage.removeItem(STORAGE_KEY);
+        users = loadUsers();
+        saveUsers(users);
+        refreshUserSelect();
+        setActive(users[0].id);
+      };
+
+      // add note
+      $("saveNote").onclick = () => {
+        const txt = $("quickNote").value.trim();
+        if (!txt) {
+          alert("Write a quick note first");
+          return;
+        }
+        addToToday({ note: txt });
+        $("quickNote").value = "";
+      };
+
+      // helper to ensure day record exists
+      function ensureDay(u, key) {
+        if (!u.records[key])
+          u.records[key] = {
+            dms: 0,
+            grind: false,
+            videos: [],
+            apps: [],
+            notes: [],
+          };
+        return u.records[key];
+      }
+
+      // core add function (multiple fields)
+      function addToToday({
+        dms = 0,
+        grind = null,
+        video = null,
+        app = null,
+        note = null,
+      }) {
+        const u = users.find((x) => x.id === activeId);
+        if (!u) {
+          alert("No active user");
+          return;
+        }
+        const key = todayKey();
+        const day = ensureDay(u, key);
+        if (dms) day.dms += dms;
+        if (grind !== null) day.grind = grind;
+        if (video)
+          day.videos.push({ title: video, time: new Date().toISOString() });
+        if (app) day.apps.push({ note: app, time: new Date().toISOString() });
+        if (note)
+          day.notes.push({ note: note, time: new Date().toISOString() });
+        saveUsers(users);
+        renderOverview();
+      }
+
+      // stats helpers
+      function summarizeYear(u) {
+        const year = new Date().getFullYear();
+        let totalDms = 0,
+          totalGrind = 0,
+          totalVideos = 0,
+          totalApps = 0;
+        Object.entries(u.records).forEach(([date, rec]) => {
+          if (!date.startsWith(String(year))) return;
+          totalDms += rec.dms || 0;
+          if (rec.grind) totalGrind += 1;
+          if (rec.videos && rec.videos.length) totalVideos += rec.videos.length;
+          if (rec.apps && rec.apps.length) totalApps += rec.apps.length;
+        });
+        return { totalDms, totalGrind, totalVideos, totalApps };
+      }
+
+      // build arrays for charts
+      function lastNDays(u, n = 30) {
+        const out = [];
+        const labels = [];
+        for (let i = n - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const k = d.toISOString().slice(0, 10);
+          labels.push(k.slice(5)); // MM-DD
+          const r = u.records[k];
+          out.push(r ? r.dms || 0 : 0);
+        }
+        return { labels, data: out };
+      }
+
+      function grindPerMonth(u) {
+        const year = String(new Date().getFullYear());
+        const months = Array(12).fill(0);
+        Object.entries(u.records).forEach(([date, rec]) => {
+          if (!date.startsWith(year)) return;
+          if (rec.grind) {
+            const m = parseInt(date.slice(5, 7), 10) - 1;
+            months[m] += 1;
+          }
+        });
+        const labels = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        return { labels, data: months };
+      }
+
+      // Render overview
+      function renderOverview() {
+        const u = users.find((x) => x.id === activeId);
+        if (!u) {
+          controlsCard.style.display = "none";
+          overviewCard.style.display = "none";
+          return;
+        }
+        controlsCard.style.display = "block";
+        overviewCard.style.display = "block";
+        activeUserLabel.textContent = u.name || u.id;
+        const sums = summarizeYear(u);
+        statDM.textContent = sums.totalDms;
+        statGrind.textContent = sums.totalGrind;
+        statVideos.textContent = sums.totalVideos;
+        statApps.textContent = sums.totalApps;
+
+        const last30 = lastNDays(u, 30);
+        const gpm = grindPerMonth(u);
+
+        // quick 30 totals
+        const s30dm = last30.data.reduce((a, b) => a + b, 0);
+        const s30gr = Object.entries(u.records).filter(([k, v]) => {
+          const d = new Date(k);
+          return new Date() - d <= 1000 * 60 * 60 * 24 * 30 && v.grind;
+        }).length;
+        const s30vid = Object.entries(u.records).filter(([k, v]) => {
+          const d = new Date(k);
+          return (
+            new Date() - d <= 1000 * 60 * 60 * 24 * 30 &&
+            v.videos &&
+            v.videos.length
+          );
+        }).length;
+
+        p30DM.textContent = "DM " + s30dm;
+        p30Grind.textContent = "Grind " + s30gr;
+        p30Video.textContent = "Vid " + s30vid;
+
+        // update charts
+        if (dmChart) dmChart.destroy();
+        dmChart = new Chart(dmChartCtx, {
+          type: "line",
+          data: {
+            labels: last30.labels,
+            datasets: [
+              {
+                label: "DMs",
+                data: last30.data,
+                fill: true,
+                tension: 0.3,
+                backgroundColor: "rgba(124,58,237,0.12)",
+                borderColor: "rgba(124,58,237,0.9)",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+          },
+        });
+
+        if (grindChart) grindChart.destroy();
+        grindChart = new Chart(grindChartCtx, {
+          type: "bar",
+          data: {
+            labels: gpm.labels,
+            datasets: [
+              {
+                label: "Grind days",
+                data: gpm.data,
+                backgroundColor: "rgba(6,182,212,0.12)",
+                borderColor: "rgba(6,182,212,0.9)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+          },
+        });
+      }
+
+      renderOverview();
+
+      // Export all users
+      $("exportAll").onclick = () => {
+        const data = JSON.stringify(users, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ccstudio_all_users.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // Import all
+      $("importAll").onclick = () => importBtn.click();
+
+      // help
+      $("helpBtn").onclick = () =>
+        alert(
+          "How to use:\\n1) Switch user or create a new user.\\n2) Add DMs, mark grind days, add videos/apps.\\n3) Use Export to backup data. Charts auto-update."
+        );
+
+      // small keyboard shortcut for +1 DM
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "+") addToToday({ dms: 1 });
+      });
+
+      // initial save to ensure default users exist
+      saveUsers(users);
+    </script>
+  </body>
+</html>
