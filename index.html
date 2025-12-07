@@ -1,954 +1,447 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CC Studio — Content Systems & Retention-first Editing</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CC Studio — Content Systems & Retention-first Editing</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --gold: #ffb800;
-        --deep: #002523;
-        --soft-gray: #e5e8ef;
-        --white: #ffffff;
-        --muted: rgba(0, 0, 0, 0.55);
-        --card-shadow: 0 12px 40px rgba(0, 37, 35, 0.06);
-        --radius: 16px;
-        --max-width: 1200px;
-        --glass: rgba(255, 255, 255, 0.6);
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-        background: linear-gradient(180deg, var(--soft-gray), #f6fbfa);
-        color: var(--deep);
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        line-height: 1.45;
-      }
-      .wrap {
-        max-width: var(--max-width);
-        margin: 28px auto;
-        padding: 0 20px;
-      }
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --gold: #FFB800;
+      --deep: #002523;
+      --soft-gray: #E5E8EF;
+      --white: #ffffff;
+      --muted: rgba(0,0,0,0.55);
+      --card-shadow: 0 12px 40px rgba(0,37,35,0.06);
+      --radius:16px;
+      --max-width:1200px;
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+      background:linear-gradient(180deg,var(--soft-gray),#f6fbfa);
+      color:var(--deep);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    .wrap{max-width:var(--max-width);margin:28px auto;padding:0 20px}
 
-      /* Top Bar */
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 18px;
-        border-radius: 12px;
-        background: linear-gradient(
-          90deg,
-          rgba(0, 37, 35, 0.03),
-          rgba(255, 184, 0, 0.02)
-        );
-        box-shadow: 0 6px 26px rgba(2, 20, 20, 0.02);
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .logo {
-        width: 46px;
-        height: 46px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--deep), #0b7d6e);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--white);
-        font-weight: 800;
-        font-size: 18px;
-        box-shadow: 0 6px 20px rgba(0, 37, 35, 0.08);
-      }
-      nav.topnav {
-        display: flex;
-        gap: 18px;
-        align-items: center;
-      }
-      nav.topnav a {
-        color: var(--muted);
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 14px;
-        padding: 8px 10px;
-        border-radius: 8px;
-      }
-      nav.topnav a:hover {
-        color: var(--deep);
-        background: rgba(0, 37, 35, 0.03);
-      }
+    /* Top Bar */
+    .topbar{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:16px 18px;border-radius:12px;background:linear-gradient(90deg, rgba(0,37,35,0.03), rgba(255,184,0,0.02));
+      box-shadow:0 6px 26px rgba(2,20,20,0.02);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--deep),#0b7d6e);
+      display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:800;font-size:18px;
+      box-shadow: 0 6px 20px rgba(0,37,35,0.08);
+    }
+    nav.topnav{display:flex;gap:18px;align-items:center}
+    nav.topnav a{color:var(--muted);text-decoration:none;font-weight:700;font-size:14px;padding:8px 10px;border-radius:8px}
+    nav.topnav a:hover{color:var(--deep);background:rgba(0,37,35,0.03)}
 
-      /* HERO */
-      .hero {
-        display: grid;
-        grid-template-columns: 1fr 360px;
-        gap: 28px;
-        margin-top: 22px;
-        align-items: start;
-      }
-      .eyebrow {
-        font-weight: 700;
-        color: var(--muted);
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-      .headline {
-        font-size: 36px;
-        line-height: 1.02;
-        font-weight: 800;
-        margin: 0 0 12px;
-      }
-      .sub {
-        color: var(--muted);
-        font-size: 15px;
-        margin-bottom: 18px;
-        max-width: 720px;
-      }
-      .ctas {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        margin-top: 6px;
-      }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 18px;
-        border-radius: 12px;
-        font-weight: 800;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-        box-shadow: 0 10px 30px rgba(0, 37, 35, 0.04);
-      }
-      .btn-primary {
-        background: linear-gradient(90deg, var(--gold), #ffbe45);
-        color: var(--deep);
-        border: 0;
-      }
-      .btn-ghost {
-        background: var(--white);
-        border: 2px solid rgba(0, 37, 35, 0.06);
-        color: var(--deep);
-      }
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;margin-top:22px;align-items:start}
+    .eyebrow{font-weight:700;color:var(--muted);font-size:13px;margin-bottom:8px}
+    .headline{font-size:36px;line-height:1.02;font-weight:800;margin:0 0 12px}
+    .sub{color:var(--muted);font-size:15px;margin-bottom:18px;max-width:720px}
+    .ctas{display:flex;gap:14px;align-items:center;margin-top:6px}
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;cursor:pointer;
+      box-shadow: 0 10px 30px rgba(0,37,35,0.04);
+    }
+    .btn-primary{background:linear-gradient(90deg,var(--gold),#ffbe45);color:var(--deep);border:0}
+    .btn-ghost{background:var(--white);border:2px solid rgba(0,37,35,0.06);color:var(--deep)}
 
-      .small-note {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 10px;
-      }
+    .small-note{font-size:13px;color:var(--muted);margin-top:10px}
 
-      /* Profile / Trust card */
-      .profile-card {
-        background: linear-gradient(180deg, var(--white), #fbffff);
-        border-radius: 14px;
-        padding: 18px;
-        box-shadow: var(--card-shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-      .profile-top {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-      .avatar {
-        width: 72px;
-        height: 72px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #d9f3ef, #e9fff7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        color: var(--deep);
-        font-size: 26px;
-      }
-      .meta h3 {
-        margin: 0;
-        font-size: 16px;
-      }
-      .meta p {
-        margin: 6px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .badges {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-      }
-      .badge {
-        background: linear-gradient(
-          90deg,
-          rgba(255, 184, 0, 0.12),
-          rgba(0, 37, 35, 0.02)
-        );
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-weight: 700;
-        color: var(--deep);
-        font-size: 13px;
-      }
+    /* Profile / Trust card */
+    .profile-card{background:linear-gradient(180deg,var(--white),#fbffff);border-radius:14px;padding:18px;box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:12px}
+    .profile-top{display:flex;gap:12px;align-items:center}
+    .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#d9f3ef,#e9fff7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--deep);font-size:26px}
+    .meta h3{margin:0;font-size:16px}
+    .meta p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .badge{background:linear-gradient(90deg, rgba(255,184,0,0.12), rgba(0,37,35,0.02));padding:6px 10px;border-radius:999px;font-weight:700;color:var(--deep);font-size:13px}
 
-      /* Portfolio (premium) */
-      .section {
-        margin-top: 36px;
-      }
-      .title-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: end;
-        gap: 12px;
-      }
-      .title {
-        font-size: 20px;
-        font-weight: 800;
-      }
-      .lead {
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .portfolio-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin-top: 14px;
-      }
-      .project {
-        background: var(--white);
-        border-radius: 12px;
-        padding: 14px;
-        box-shadow: 0 18px 40px rgba(0, 37, 35, 0.04);
-        transition: transform 0.28s ease;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        overflow: hidden;
-      }
-      .project:hover {
-        transform: translateY(-8px);
-      }
-      .thumb {
-        height: 180px;
-        border-radius: 10px;
-        background-size: cover;
-        background-position: center;
-        box-shadow: inset 0 -40px 60px rgba(0, 0, 0, 0.06);
-      }
-      .project h4 {
-        margin: 6px 0 0;
-        font-size: 15px;
-      }
-      .project p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
+    /* Portfolio (premium) */
+    .section{margin-top:36px}
+    .title-row{display:flex;justify-content:space-between;align-items:end;gap:12px}
+    .title{font-size:20px;font-weight:800}
+    .lead{color:var(--muted);font-size:13px}
+    .portfolio-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px;
+    }
+    .project{
+      background:var(--white);border-radius:12px;padding:14px;box-shadow:0 18px 40px rgba(0,37,35,0.04);transition:transform .28s ease;
+      display:flex;flex-direction:column;gap:10px;overflow:hidden;
+    }
+    .project:hover{transform:translateY(-8px)}
+    .thumb{
+      height:180px;border-radius:10px;background-size:cover;background-position:center;box-shadow:inset 0 -40px 60px rgba(0,0,0,0.06);
+    }
+    .project h4{margin:6px 0 0;font-size:15px}
+    .project p{margin:0;color:var(--muted);font-size:13px}
 
-      /* What makes me different (stylish) */
-      .diff-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-        margin-top: 18px;
-      }
-      .diff-card {
-        background: linear-gradient(180deg, var(--white), #fbffff);
-        border-left: 6px solid var(--gold);
-        padding: 16px;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 37, 35, 0.03);
-      }
-      .diff-card h5 {
-        margin: 0 0 6px;
-        font-size: 15px;
-      }
-      .diff-card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
+    /* What makes me different (stylish) */
+    .diff-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .diff-card{background:linear-gradient(180deg,var(--white),#fbffff);border-left:6px solid var(--gold);padding:16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,37,35,0.03)}
+    .diff-card h5{margin:0 0 6px;font-size:15px}
+    .diff-card p{margin:0;color:var(--muted);font-size:13px}
 
-      /* Proof / case study */
-      .case {
-        display: grid;
-        grid-template-columns: 1fr 380px;
-        gap: 18px;
-        margin-top: 22px;
-        align-items: start;
-      }
-      .case-card {
-        background: var(--white);
-        padding: 18px;
-        border-radius: 12px;
-        box-shadow: var(--card-shadow);
-      }
-      .metrics {
-        display: flex;
-        gap: 14px;
-        margin-top: 12px;
-      }
-      .metric {
-        background: linear-gradient(180deg, #fff, #fbfffb);
-        padding: 12px;
-        border-radius: 10px;
-        text-align: center;
-        flex: 1;
-      }
-      .metric strong {
-        display: block;
-        font-size: 20px;
-        color: var(--deep);
-        font-weight: 800;
-      }
-      /* before-after slider */
-      .ba-wrap {
-        position: relative;
-        border-radius: 10px;
-        overflow: hidden;
-        height: 220px;
-      }
-      .ba-back,
-      .ba-front {
-        position: absolute;
-        inset: 0;
-        background-size: cover;
-        background-position: center;
-      }
-      .ba-front {
-        width: 50%;
-        overflow: hidden;
-      }
-      .ba-handle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 56px;
-        height: 56px;
-        border-radius: 999px;
-        background: var(--white);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        border: 3px solid rgba(0, 37, 35, 0.06);
-      }
-      .ba-legend {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 13px;
-        color: var(--muted);
-      }
+    /* Proof / case study */
+    .case{
+      display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:22px;align-items:start;
+    }
+    .case-card{background:var(--white);padding:18px;border-radius:12px;box-shadow:var(--card-shadow)}
+    .metrics{display:flex;gap:14px;margin-top:12px}
+    .metric{background:linear-gradient(180deg,#fff,#fbfffb);padding:12px;border-radius:10px;text-align:center;flex:1}
+    .metric strong{display:block;font-size:20px;color:var(--deep);font-weight:800}
+    /* before-after slider */
+    .ba-wrap{position:relative;border-radius:10px;overflow:hidden;height:220px}
+    .ba-back, .ba-front{position:absolute;inset:0;background-size:cover;background-position:center}
+    .ba-front{width:50%;overflow:hidden}
+    .ba-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:999px;background:var(--white);display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.12);border:3px solid rgba(0,37,35,0.06)}
+    .ba-legend{display:flex;gap:10px;margin-top:10px;font-size:13px;color:var(--muted)}
 
-      /* Packages (no visible price) */
-      .packages {
-        display: flex;
-        gap: 16px;
-        margin-top: 18px;
-      }
-      .pkg {
-        flex: 1;
-        background: linear-gradient(180deg, var(--white), #fbffff);
-        padding: 18px;
-        border-radius: 12px;
-        box-shadow: 0 10px 28px rgba(0, 37, 35, 0.03);
-      }
-      .pkg h4 {
-        margin: 0 0 8px;
-      }
-      .pkg ul {
-        margin: 0;
-        padding-left: 18px;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .pkg .cta {
-        display: inline-block;
-        margin-top: 12px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        background: var(--gold);
-        color: var(--deep);
-        font-weight: 800;
-        text-decoration: none;
-      }
+    /* Packages (no visible price) */
+    .packages{display:flex;gap:16px;margin-top:18px}
+    .pkg{flex:1;background:linear-gradient(180deg,var(--white),#fbffff);padding:18px;border-radius:12px;box-shadow:0 10px 28px rgba(0,37,35,0.03)}
+    .pkg h4{margin:0 0 8px}
+    .pkg ul{margin:0;padding-left:18px;color:var(--muted);font-size:13px}
+    .pkg .cta{display:inline-block;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--gold);color:var(--deep);font-weight:800;text-decoration:none}
 
-      /* Workflow */
-      .workflow {
-        display: flex;
-        gap: 12px;
-        margin-top: 18px;
-        flex-wrap: wrap;
-      }
-      .step {
-        background: var(--white);
-        padding: 14px;
-        border-radius: 10px;
-        flex: 1;
-        min-width: 180px;
-        box-shadow: 0 12px 30px rgba(0, 37, 35, 0.03);
-      }
-      .step h5 {
-        margin: 0 0 6px;
-      }
+    /* Workflow */
+    .workflow{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .step{background:var(--white);padding:14px;border-radius:10px;flex:1;min-width:180px;box-shadow:0 12px 30px rgba(0,37,35,0.03)}
+    .step h5{margin:0 0 6px}
 
-      /* Tools compact */
-      .tools-compact {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-      }
-      .tool-pill {
-        background: linear-gradient(
-          90deg,
-          rgba(0, 37, 35, 0.03),
-          rgba(255, 184, 0, 0.02)
-        );
-        padding: 8px 12px;
-        border-radius: 999px;
-        color: var(--deep);
-        font-weight: 700;
-        font-size: 13px;
-      }
+    /* Tools compact */
+    .tools-compact{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .tool-pill{background:linear-gradient(90deg, rgba(0,37,35,0.03), rgba(255,184,0,0.02));padding:8px 12px;border-radius:999px;color:var(--deep);font-weight:700;font-size:13px}
 
-      /* Footer CTA */
-      .footer-cta {
-        margin-top: 32px;
-        background: linear-gradient(90deg, #002523, #063b36);
-        color: white;
-        padding: 26px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-      }
-      .footer-cta h3 {
-        margin: 0;
-      }
-      .footer-cta a {
-        background: var(--gold);
-        padding: 12px 18px;
-        border-radius: 10px;
-        color: var(--deep);
-        font-weight: 800;
-        text-decoration: none;
-      }
+    /* Footer CTA */
+    .footer-cta{margin-top:32px;background:linear-gradient(90deg,#002523, #063b36);color:white;padding:26px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .footer-cta h3{margin:0}
+    .footer-cta a{background:var(--gold);padding:12px 18px;border-radius:10px;color:var(--deep);font-weight:800;text-decoration:none}
 
-      footer {
-        margin-top: 28px;
-        text-align: center;
-        color: var(--muted);
-        font-size: 13px;
-        padding-bottom: 30px;
-      }
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px;padding-bottom:30px}
 
-      /* Responsive */
-      @media (max-width: 1100px) {
-        .hero {
-          grid-template-columns: 1fr;
-        }
-        .case {
-          grid-template-columns: 1fr;
-        }
-        .portfolio-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .diff-grid {
-          grid-template-columns: 1fr;
-        }
-        .packages {
-          flex-direction: column;
-        }
-      }
-      @media (max-width: 560px) {
-        .portfolio-grid {
-          grid-template-columns: 1fr;
-        }
-        .topbar {
-          padding: 12px;
-        }
-        .headline {
-          font-size: 24px;
-        }
-        .btn {
-          padding: 10px 14px;
-        }
-      }
-    </style>
-  </head>
+    /* Responsive */
+    @media (max-width:1100px){
+      .hero{grid-template-columns:1fr}
+      .case{grid-template-columns:1fr}
+      .portfolio-grid{grid-template-columns:repeat(2,1fr)}
+      .diff-grid{grid-template-columns:1fr}
+      .packages{flex-direction:column}
+    }
+    @media (max-width:560px){
+      .portfolio-grid{grid-template-columns:1fr}
+      .topbar{padding:12px}
+      .headline{font-size:24px}
+      .btn{padding:10px 14px}
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="wrap">
-      <!-- Top -->
-      <div class="topbar" aria-hidden="false">
-        <div class="brand">
-          <div class="logo">CC</div>
-          <div>
-            <div style="font-weight: 800; color: var(--deep)">CC Studio</div>
-            <div style="font-size: 13px; color: var(--muted)">
-              Content Systems • Retention-first Editing
-            </div>
-          </div>
+<body>
+  <div class="wrap">
+    <!-- Top -->
+    <div class="topbar" aria-hidden="false">
+      <div class="brand">
+        <div class="logo">CC</div>
+        <div>
+          <div style="font-weight:800;color:var(--deep)">CC Studio</div>
+          <div style="font-size:13px;color:var(--muted)">Content Systems • Retention-first Editing</div>
         </div>
-        <nav class="topnav" aria-label="Main Navigation">
-          <a href="#work">Work</a>
-          <a href="#system">System</a>
-          <a href="#case">Case Study</a>
-          <a href="#contact">Contact</a>
-        </nav>
+      </div>
+      <nav class="topnav" aria-label="Main Navigation">
+        <a href="#work">Work</a>
+        <a href="#system">System</a>
+        <a href="#case">Case Study</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero" role="region" aria-label="Intro">
+      <div>
+        <div class="eyebrow">We help creators, coaches, and brands turn raw content into scroll-stopping videos</div>
+        <h1 class="headline">Turn raw footage into videos that grow your audience — and your revenue.</h1>
+        <div class="sub">Reels, TikToks, YouTube Shorts • Hook-first editing • Upload-ready SEO & thumbnails — CC Studio</div>
+
+        <div class="ctas">
+          <a class="btn btn-primary" href="#contact">Get a Free Sample Edit</a>
+          <a class="btn btn-ghost" href="#work">View Our Best Work</a>
+        </div>
+
+        <div class="small-note">Fast replies · Free 48-hour trial edit on request · Deliverables: MP4, vertical & horizontal</div>
       </div>
 
-      <!-- HERO -->
-      <section class="hero" role="region" aria-label="Intro">
+      <!-- Trust / profile -->
+      <aside>
+        <div class="profile-card" aria-hidden="false">
+          <div class="profile-top">
+            <div class="avatar">J</div>
+            <div class="meta">
+              <h3>Hi — I'm John of CC Studio</h3>
+              <p>Specialist in short-form & cinematic storytelling. I focus on retention-first edits that increase watch-time and conversions.</p>
+              <div class="badges">
+                <div class="badge">Retention-first</div>
+                <div class="badge">Upload-ready</div>
+                <div class="badge">Fast turnaround</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase" style="margin-top:6px">
+            <strong style="color:var(--deep);">Selected sectors:</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">Coaches, creators, D2C, SaaS marketing clips, product UGC, and cinematic storytellers.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- BEST WORK -->
+    <section id="work" class="section" aria-labelledby="work-title">
+      <div class="title-row">
         <div>
-          <div class="eyebrow">
-            We help creators, coaches, and brands turn raw content into
-            scroll-stopping videos
-          </div>
-          <h1 class="headline">
-            Turn raw footage into videos that grow your audience — and your
-            revenue.
-          </h1>
-          <div class="sub">
-            Reels, TikToks, YouTube Shorts • Hook-first editing • Upload-ready
-            SEO & thumbnails — CC Studio
-          </div>
+          <div class="title" id="work-title">Best Work — retention-first edits</div>
+          <div class="lead">Top 4 recent edits — curated to show results and style.</div>
+        </div>
+        <div style="font-size:13px;color:var(--muted)">Want all samples? <a href="#contact" style="color:var(--deep);font-weight:800">Request a link</a></div>
+      </div>
 
-          <div class="ctas">
-            <a class="btn btn-primary" href="#contact"
-              >Get a Free Sample Edit</a
-            >
-            <a class="btn btn-ghost" href="#work">View Our Best Work</a>
-          </div>
+      <div class="portfolio-grid" style="margin-top:14px">
+        <!-- Replace background images with your thumbnails -->
+        <div class="project">
+          <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1400&auto=format&fit=crop');"></div>
+          <h4>Talking Head — Hook Optimization</h4>
+          <p>Improved first-3s hook + visual jump-cuts → retention uplift.</p>
+        </div>
 
-          <div class="small-note">
-            Fast replies · Free 48-hour trial edit on request · Deliverables:
-            MP4, vertical & horizontal
+        <div class="project">
+          <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1400&auto=format&fit=crop');"></div>
+          <h4>UGC Ad — Product Demo</h4>
+          <p>Punchy captions & benefit-first pacing — built to convert.</p>
+        </div>
+
+        <div class="project">
+          <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1400&auto=format&fit=crop');"></div>
+          <h4>Motion Graphics — Brand Intro</h4>
+          <p>Short brand hooks and subtle motion to elevate CPV.</p>
+        </div>
+
+        <div class="project">
+          <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1526318472351-c75fcf070a4f?q=80&w=1400&auto=format&fit=crop');"></div>
+          <h4>Cinematic Edits</h4>
+          <p>Long-form cinematic storytelling with brand-consistent color.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT MAKES ME DIFFERENT -->
+    <section class="section" aria-labelledby="diff-title">
+      <div class="title-row">
+        <div>
+          <div class="title" id="diff-title">What I deliver that most editors don’t</div>
+          <div class="lead">Real outcomes — not just cuts.</div>
+        </div>
+      </div>
+
+      <div class="diff-grid">
+        <div class="diff-card">
+          <h5>Content System (not one-offs)</h5>
+          <p>Folder structure, naming rules, and a content calendar so posting is predictable and consistent.</p>
+        </div>
+        <div class="diff-card">
+          <h5>Hook Rewrites</h5>
+          <p>I improve the first 3 seconds and the visual hook to reduce drop-off and increase watch time.</p>
+        </div>
+        <div class="diff-card">
+          <h5>Platform Optimization</h5>
+          <p>Separate cuts for TikTok, Reels, and Shorts — each formatted with best practices & captions.</p>
+        </div>
+        <div class="diff-card">
+          <h5>Upload-Ready Deliverables</h5>
+          <p>Title, description, SEO keywords, suggested hashtags and thumbnail options ready to publish.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CASE STUDY -->
+    <section id="case" class="section" aria-labelledby="case-title">
+      <div class="title-row">
+        <div>
+          <div class="title" id="case-title">Case Study — Hook + Retention Boost</div>
+          <div class="lead">Example: short-form coaching clip improved for retention & watch-time.</div>
+        </div>
+      </div>
+
+      <div class="case" style="margin-top:12px">
+        <div class="case-card">
+          <div style="font-weight:800">Problem</div>
+          <p style="color:var(--muted);margin-top:8px">Low first-3s retention, no captioning, and poor repurposing across platforms.</p>
+
+          <div style="margin-top:12px;font-weight:800">Action</div>
+          <p style="color:var(--muted);margin-top:8px">Rewrote hook, tightened pacing, added captions and three platform cuts.</p>
+
+          <div style="margin-top:12px;font-weight:800">Result</div>
+          <div class="metrics">
+            <div class="metric"><strong>+28%</strong><span style="color:var(--muted);display:block;margin-top:6px">avg. retention</span></div>
+            <div class="metric"><strong>+22%</strong><span style="color:var(--muted);display:block;margin-top:6px">watch time</span></div>
+            <div class="metric"><strong>2x</strong><span style="color:var(--muted);display:block;margin-top:6px">repurposed clips / month</span></div>
           </div>
         </div>
 
-        <!-- Trust / profile -->
         <aside>
-          <div class="profile-card" aria-hidden="false">
-            <div class="profile-top">
-              <div class="avatar">J</div>
-              <div class="meta">
-                <h3>Hi — I'm John of CC Studio</h3>
-                <p>
-                  Specialist in short-form & cinematic storytelling. I focus on
-                  retention-first edits that increase watch-time and
-                  conversions.
-                </p>
-                <div class="badges">
-                  <div class="badge">Retention-first</div>
-                  <div class="badge">Upload-ready</div>
-                  <div class="badge">Fast turnaround</div>
-                </div>
-              </div>
+          <div class="case-card">
+            <div class="ba-wrap" id="baWrap" aria-hidden="false">
+              <div class="ba-back" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop');"></div>
+              <div class="ba-front" id="baFront" style="background-image:url('https://images.unsplash.com/photo-1505685296765-3a2736de412f?q=80&w=1400&auto=format&fit=crop');"></div>
+              <div class="ba-handle" id="baHandle">⇆</div>
             </div>
-
-            <div class="showcase" style="margin-top: 6px">
-              <strong style="color: var(--deep)">Selected sectors:</strong>
-              <div
-                style="color: var(--muted); font-size: 13px; margin-top: 6px"
-              >
-                Coaches, creators, D2C, SaaS marketing clips, product UGC, and
-                cinematic storytellers.
-              </div>
+            <div class="ba-legend">
+              <div style="display:flex;gap:8px;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#e8eefc;display:inline-block"></span>Before (flat)</div>
+              <div style="display:flex;gap:8px;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#fff4db;display:inline-block"></span>After (hooked)</div>
             </div>
           </div>
         </aside>
-      </section>
+      </div>
+    </section>
 
-      <!-- BEST WORK -->
-      <section id="work" class="section" aria-labelledby="work-title">
-        <div class="title-row">
-          <div>
-            <div class="title" id="work-title">
-              Best Work — retention-first edits
-            </div>
-            <div class="lead">
-              Top 4 recent edits — curated to show results and style.
-            </div>
-          </div>
-          <div style="font-size: 13px; color: var(--muted)">
-            Want all samples?
-            <a href="#contact" style="color: var(--deep); font-weight: 800"
-              >Request a link</a
-            >
-          </div>
+    <!-- PACKAGES (NO PRICES) -->
+    <section id="system" class="section" aria-labelledby="packages-title">
+      <div class="title-row">
+        <div>
+          <div class="title" id="packages-title">Creator Growth Packages</div>
+          <div class="lead">Clear packages for consistent growth. Contact for custom plans and pricing.</div>
+        </div>
+      </div>
+
+      <div class="packages">
+        <div class="pkg">
+          <h4>Starter Growth</h4>
+          <ul>
+            <li>4–8 short edits / month</li>
+            <li>Hook rewriting + captions</li>
+            <li>Upload-ready files & 1 thumbnail</li>
+          </ul>
+          <a class="cta" href="#contact">Request Starter</a>
         </div>
 
-        <div class="portfolio-grid" style="margin-top: 14px">
-          <!-- Replace background images with your thumbnails -->
-          <div class="project">
-            <div
-              class="thumb"
-              style="
-                background-image: url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1400&auto=format&fit=crop');
-              "
-            ></div>
-            <h4>Talking Head — Hook Optimization</h4>
-            <p>Improved first-3s hook + visual jump-cuts → retention uplift.</p>
-          </div>
-
-          <div class="project">
-            <div
-              class="thumb"
-              style="
-                background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1400&auto=format&fit=crop');
-              "
-            ></div>
-            <h4>UGC Ad — Product Demo</h4>
-            <p>Punchy captions & benefit-first pacing — built to convert.</p>
-          </div>
-
-          <div class="project">
-            <div
-              class="thumb"
-              style="
-                background-image: url('https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1400&auto=format&fit=crop');
-              "
-            ></div>
-            <h4>Motion Graphics — Brand Intro</h4>
-            <p>Short brand hooks and subtle motion to elevate CPV.</p>
-          </div>
-
-          <div class="project">
-            <div
-              class="thumb"
-              style="
-                background-image: url('https://images.unsplash.com/photo-1526318472351-c75fcf070a4f?q=80&w=1400&auto=format&fit=crop');
-              "
-            ></div>
-            <h4>Cinematic Edits</h4>
-            <p>Long-form cinematic storytelling with brand-consistent color.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- WHAT MAKES ME DIFFERENT -->
-      <section class="section" aria-labelledby="diff-title">
-        <div class="title-row">
-          <div>
-            <div class="title" id="diff-title">
-              What I deliver that most editors don’t
-            </div>
-            <div class="lead">Real outcomes — not just cuts.</div>
-          </div>
+        <div class="pkg">
+          <h4>Momentum</h4>
+          <ul>
+            <li>12+ edits / month</li>
+            <li>Weekly calendar + retention checks</li>
+            <li>Thumbnail pack + title suggestions</li>
+          </ul>
+          <a class="cta" href="#contact">Request Momentum</a>
         </div>
 
-        <div class="diff-grid">
-          <div class="diff-card">
-            <h5>Content System (not one-offs)</h5>
-            <p>
-              Folder structure, naming rules, and a content calendar so posting
-              is predictable and consistent.
-            </p>
-          </div>
-          <div class="diff-card">
-            <h5>Hook Rewrites</h5>
-            <p>
-              I improve the first 3 seconds and the visual hook to reduce
-              drop-off and increase watch time.
-            </p>
-          </div>
-          <div class="diff-card">
-            <h5>Platform Optimization</h5>
-            <p>
-              Separate cuts for TikTok, Reels, and Shorts — each formatted with
-              best practices & captions.
-            </p>
-          </div>
-          <div class="diff-card">
-            <h5>Upload-Ready Deliverables</h5>
-            <p>
-              Title, description, SEO keywords, suggested hashtags and thumbnail
-              options ready to publish.
-            </p>
-          </div>
+        <div class="pkg">
+          <h4>Full Content System</h4>
+          <ul>
+            <li>Workflow setup & project management</li>
+            <li>Script polishing + ad cuts</li>
+            <li>Priority delivery & strategy calls</li>
+          </ul>
+          <a class="cta" href="#contact">Request System</a>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- CASE STUDY -->
-      <section id="case" class="section" aria-labelledby="case-title">
-        <div class="title-row">
-          <div>
-            <div class="title" id="case-title">
-              Case Study — Hook + Retention Boost
-            </div>
-            <div class="lead">
-              Example: short-form coaching clip improved for retention &
-              watch-time.
-            </div>
-          </div>
+    <!-- WORKFLOW -->
+    <section class="section">
+      <div class="title">How it works (fast & predictable)</div>
+      <div class="workflow" style="margin-top:12px">
+        <div class="step">
+          <h5>1. Free sample</h5>
+          <p style="color:var(--muted)">Send a short clip — I’ll return a trial edit so you can judge fit.</p>
         </div>
-
-        <div class="case" style="margin-top: 12px">
-          <div class="case-card">
-            <div style="font-weight: 800">Problem</div>
-            <p style="color: var(--muted); margin-top: 8px">
-              Low first-3s retention, no captioning, and poor repurposing across
-              platforms.
-            </p>
-
-            <div style="margin-top: 12px; font-weight: 800">Action</div>
-            <p style="color: var(--muted); margin-top: 8px">
-              Rewrote hook, tightened pacing, added captions and three platform
-              cuts.
-            </p>
-
-            <div style="margin-top: 12px; font-weight: 800">Result</div>
-            <div class="metrics">
-              <div class="metric">
-                <strong>+28%</strong
-                ><span
-                  style="color: var(--muted); display: block; margin-top: 6px"
-                  >avg. retention</span
-                >
-              </div>
-              <div class="metric">
-                <strong>+22%</strong
-                ><span
-                  style="color: var(--muted); display: block; margin-top: 6px"
-                  >watch time</span
-                >
-              </div>
-              <div class="metric">
-                <strong>2x</strong
-                ><span
-                  style="color: var(--muted); display: block; margin-top: 6px"
-                  >repurposed clips / month</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <aside>
-            <div class="case-card">
-              <div class="ba-wrap" id="baWrap" aria-hidden="false">
-                <div
-                  class="ba-back"
-                  style="
-                    background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop');
-                  "
-                ></div>
-                <div
-                  class="ba-front"
-                  id="baFront"
-                  style="
-                    background-image: url('https://images.unsplash.com/photo-1505685296765-3a2736de412f?q=80&w=1400&auto=format&fit=crop');
-                  "
-                ></div>
-                <div class="ba-handle" id="baHandle">⇆</div>
-              </div>
-              <div class="ba-legend">
-                <div style="display: flex; gap: 8px; align-items: center">
-                  <span
-                    style="
-                      width: 10px;
-                      height: 10px;
-                      border-radius: 50%;
-                      background: #e8eefc;
-                      display: inline-block;
-                    "
-                  ></span
-                  >Before (flat)
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center">
-                  <span
-                    style="
-                      width: 10px;
-                      height: 10px;
-                      border-radius: 50%;
-                      background: #fff4db;
-                      display: inline-block;
-                    "
-                  ></span
-                  >After (hooked)
-                </div>
-              </div>
-            </div>
-          </aside>
+        <div class="step">
+          <h5>2. System setup</h5>
+          <p style="color:var(--muted)">We create a folder, naming rules and a content calendar.</p>
         </div>
-      </section>
-
-      <!-- PACKAGES (NO PRICES) -->
-      <section id="system" class="section" aria-labelledby="packages-title">
-        <div class="title-row">
-          <div>
-            <div class="title" id="packages-title">Creator Growth Packages</div>
-            <div class="lead">
-              Clear packages for consistent growth. Contact for custom plans and
-              pricing.
-            </div>
-          </div>
+        <div class="step">
+          <h5>3. Monthly delivery</h5>
+          <p style="color:var(--muted)">Fast turnaround, 2 revision rounds, upload-ready assets.</p>
         </div>
-
-        <div class="packages">
-          <div class="pkg">
-            <h4>Starter Growth</h4>
-            <ul>
-              <li>4–8 short edits / month</li>
-              <li>Hook rewriting + captions</li>
-              <li>Upload-ready files & 1 thumbnail</li>
-            </ul>
-            <a class="cta" href="#contact">Request Starter</a>
-          </div>
-
-          <div class="pkg">
-            <h4>Momentum</h4>
-            <ul>
-              <li>12+ edits / month</li>
-              <li>Weekly calendar + retention checks</li>
-              <li>Thumbnail pack + title suggestions</li>
-            </ul>
-            <a class="cta" href="#contact">Request Momentum</a>
-          </div>
-
-          <div class="pkg">
-            <h4>Full Content System</h4>
-            <ul>
-              <li>Workflow setup & project management</li>
-              <li>Script polishing + ad cuts</li>
-              <li>Priority delivery & strategy calls</li>
-            </ul>
-            <a class="cta" href="#contact">Request System</a>
-          </div>
+        <div class="step">
+          <h5>4. Growth check</h5>
+          <p style="color:var(--muted)">Monthly review and retention improvements.</p>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- WORKFLOW -->
-      <section class="section">
-        <div class="title">How it works (fast & predictable)</div>
-        <div class="workflow" style="margin-top: 12px">
-          <div class="step">
-            <h5>1. Free sample</h5>
-            <p style="color: var(--muted)">
-              Send a short clip — I’ll return a trial edit so you can judge fit.
-            </p>
-          </div>
-          <div class="step">
-            <h5>2. System setup</h5>
-            <p style="color: var(--muted)">
-              We create a folder, naming rules and a content calendar.
-            </p>
-          </div>
-          <div class="step">
-            <h5>3. Monthly delivery</h5>
-            <p style="color: var(--muted)">
-              Fast turnaround, 2 revision rounds, upload-ready assets.
-            </p>
-          </div>
-          <div class="step">
-            <h5>4. Growth check</h5>
-            <p style="color: var(--muted)">
-              Monthly review and retention improvements.
-            </p>
-          </div>
+    <!-- TOOLS (COMPACT) -->
+    <section class="section" aria-label="tools">
+      <div class="title-row">
+        <div>
+          <div class="title">Tools & Capabilities</div>
+          <div class="lead">We use modern tools — results are what matter.</div>
         </div>
-      </section>
+      </div>
 
-      <!-- TOOLS (COMPACT) -->
-      <section class="section" aria-label="tools">
-        <div class="title-row">
-          <div>
-            <div class="title">Tools & Capabilities</div>
-            <div class="lead">
-              We use modern tools — results are what matter.
-            </div>
-          </div>
+      <div class="tools-compact" style="margin-top:12px">
+        <div class="tool-pill">CapCut • Premiere • Resolve</div>
+        <div class="tool-pill">Hook analysis</div>
+        <div class="tool-pill">Thumbnail design</div>
+        <div class="tool-pill">Sound & color</div>
+        <div class="tool-pill">Repurposing & calendar</div>
+      </div>
+    </section>
+
+    <!-- CONTACT / CTA -->
+    <section id="contact" class="section" style="margin-top:26px">
+      <div class="footer-cta">
+        <div>
+          <h3>Ready for consistent, high-quality content?</h3>
+          <div style="color:rgba(255,255,255,0.9);font-size:14px;margin-top:6px">Get a free sample edit and see the difference yourself.</div>
         </div>
-
-        <div class="tools-compact" style="margin-top: 12px">
-          <div class="tool-pill">CapCut • Premiere • Resolve</div>
-          <div class="tool-pill">Hook analysis</div>
-          <div class="tool-pill">Thumbnail design</div>
-          <div class="tool-pill">Sound & color</div>
-          <div class="tool-pill">Repurposing & calendar</div>
+        <div>
+          <a href="mailto:hello@ccstudio.example">Get Free Sample</a>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- CONTACT / CTA -->
-      <section id="contact" class="section" style="margin-top: 26px">
-        <div class="footer-cta">
-          <div>
-            <h3>Ready for consistent, high-quality content?</h3>
-            <div
-              style="
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 14px;
-                margin-top: 6px;
-              "
-            >
-              Get a free sample edit and see the difference yourself.
-            </div>
-          </div>
-          <div>
-            <a href="mailto:hello@ccstudio.example">Get Free Sample</a>
-          </div>
-        </div>
-      </section>
+    <footer style="margin-top:18px">© 2025 CC Studio — All rights reserved.</footer>
+  </div>
 
-      <footer style="margin-top: 18px">
-        © 2025 CC Studio — All rights reserved.
-      </footer>
-    </div>
-
-    <script>
-      // before/after slider simple
-      (function () {
-        const baWrap = document.getElementById("baWrap");
-        const baFront = document.getElementById("baFront");
-        const baHandle = document.getElementById("baHandle");
-        if (!baWrap || !baFront || !baHandle) return;
-        let dragging = false;
-        function setPos(x) {
-          const rect = baWrap.getBoundingClientRect();
-          let pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
-          baFront.style.width = pct * 100 + "%";
-          baHandle.style.left = pct * 100 + "%";
-        }
-        baHandle.addEventListener("mousedown", () => (dragging = true));
-        window.addEventListener("mouseup", () => (dragging = false));
-        window.addEventListener("mousemove", (e) => {
-          if (dragging) setPos(e.clientX);
-        });
-        // touch
-        baHandle.addEventListener("touchstart", () => (dragging = true));
-        window.addEventListener("touchend", () => (dragging = false));
-        window.addEventListener("touchmove", (e) => {
-          if (dragging) setPos(e.touches[0].clientX);
-        });
-        // init center
-        const rect = baWrap.getBoundingClientRect();
-        setPos(rect.left + rect.width / 2);
-        // make responsive initial set after load
-        window.addEventListener("load", () => {
-          const r = baWrap.getBoundingClientRect();
-          setPos(r.left + r.width / 2);
-        });
-      })();
-    </script>
-  </body>
+  <script>
+    // before/after slider simple
+    (function(){
+      const baWrap = document.getElementById('baWrap');
+      const baFront = document.getElementById('baFront');
+      const baHandle = document.getElementById('baHandle');
+      if(!baWrap || !baFront || !baHandle) return;
+      let dragging=false;
+      function setPos(x){
+        const rect=baWrap.getBoundingClientRect();
+        let pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+        baFront.style.width = (pct*100)+'%';
+        baHandle.style.left = (pct*100)+'%';
+      }
+      baHandle.addEventListener('mousedown',()=>dragging=true);
+      window.addEventListener('mouseup',()=>dragging=false);
+      window.addEventListener('mousemove',(e)=>{ if(dragging) setPos(e.clientX); });
+      // touch
+      baHandle.addEventListener('touchstart',()=>dragging=true);
+      window.addEventListener('touchend',()=>dragging=false);
+      window.addEventListener('touchmove',(e)=>{ if(dragging) setPos(e.touches[0].clientX); });
+      // init center
+      const rect=baWrap.getBoundingClientRect();
+      setPos(rect.left + rect.width/2);
+      // make responsive initial set after load
+      window.addEventListener('load', ()=>{ const r=baWrap.getBoundingClientRect(); setPos(r.left + r.width/2); });
+    })();
+  </script>
+</body>
 </html>
